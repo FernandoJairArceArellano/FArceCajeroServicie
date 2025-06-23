@@ -6,6 +6,12 @@ import com.Digis01.FArceCajeroServicie.JPA.Result;
 public interface ICajeroDAO {
 
     Result AddJPA(Cajero cajero);
-    
+
     Result GetAllJPA();
+
+    Result GetById(int idcajero);
+
+    Result RetirarDinero(int idCajero, double monto);
+
+    Result RellenarInventarioCajeros();
 }

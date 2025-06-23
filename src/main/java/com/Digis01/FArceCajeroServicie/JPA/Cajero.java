@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 public class Cajero {
@@ -14,6 +16,9 @@ public class Cajero {
 
     private int saldo;
     private String ubicacion;
+
+    @OneToMany(mappedBy = "cajero")
+    private List<Inventario> inventarios;
 
     public int getIdcajero() {
         return idcajero;
@@ -37,6 +42,14 @@ public class Cajero {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public List<Inventario> getInventarios() {
+        return inventarios;
+    }
+
+    public void setInventarios(List<Inventario> inventarios) {
+        this.inventarios = inventarios;
     }
 
 }

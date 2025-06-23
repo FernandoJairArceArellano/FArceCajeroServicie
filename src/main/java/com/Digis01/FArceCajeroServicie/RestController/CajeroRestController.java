@@ -5,6 +5,7 @@ import com.Digis01.FArceCajeroServicie.JPA.Cajero;
 import com.Digis01.FArceCajeroServicie.JPA.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,4 +49,38 @@ public class CajeroRestController {
         }
     }
 
+    @GetMapping("/getbyid/{id}")
+    public ResponseEntity<?> getById(@PathVariable int id) {
+        Result result = cajeroDAOImplementation.GetById(id);
+        if (result.correct) {
+            return ResponseEntity.ok(result.objects); // Regresa lista de CajeroInventarioDTO
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.errorMessasge);
+        }
+    }
+
+    @PostMapping("/retirar/{id}/{monto}")
+    public ResponseEntity<?> retirar(@PathVariable int id, @PathVariable double monto) {
+        Result result = cajeroDAOImplementation.RetirarDinero(id, monto);
+        if (result.correct) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(result.errorMessasge);
+        }
+    }
+
+    @GetMapping("/simularCambioDia")
+    public ResponseEntity<String> simularCambioDia() {
+        Result resultado = cajeroDAOImplementation.RellenarInventarioCajeros();
+
+        if (resultado.correct) {
+            return ResponseEntity.ok("Cajeros rellenados correctamente.");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al rellenar cajeros: " + resultado.errorMessasge);
+        }
+    }
 }
