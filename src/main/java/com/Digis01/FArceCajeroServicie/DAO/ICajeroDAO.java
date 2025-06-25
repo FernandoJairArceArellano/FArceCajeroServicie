@@ -14,4 +14,6 @@ public interface ICajeroDAO {
     Result RetirarDinero(int idCajero, double monto);
 
     Result RellenarInventarioCajeros();
+    
+    Result RellenarInventarioPorCajero(int idCajero);
 }

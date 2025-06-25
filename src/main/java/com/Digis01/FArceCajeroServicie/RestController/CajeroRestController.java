@@ -21,7 +21,7 @@ public class CajeroRestController {
     private CajeroDAOImplementation cajeroDAOImplementation;
 
     @PostMapping("add/{ubicacion}")
-    public ResponseEntity<?> addCajero(@PathVariable String ubicacion) {
+    public ResponseEntity addCajero(@PathVariable String ubicacion) {
         Cajero cajero = new Cajero();
         cajero.setUbicacion(ubicacion); // Asegúrate de tener setUbicacion
 
@@ -50,7 +50,7 @@ public class CajeroRestController {
     }
 
     @GetMapping("/getbyid/{id}")
-    public ResponseEntity<?> getById(@PathVariable int id) {
+    public ResponseEntity getById(@PathVariable int id) {
         Result result = cajeroDAOImplementation.GetById(id);
         if (result.correct) {
             return ResponseEntity.ok(result.objects); // Regresa lista de CajeroInventarioDTO
@@ -60,7 +60,7 @@ public class CajeroRestController {
     }
 
     @PostMapping("/retirar/{id}/{monto}")
-    public ResponseEntity<?> retirar(@PathVariable int id, @PathVariable double monto) {
+    public ResponseEntity retirar(@PathVariable int id, @PathVariable double monto) {
         Result result = cajeroDAOImplementation.RetirarDinero(id, monto);
         if (result.correct) {
             return ResponseEntity.ok(result);
@@ -83,4 +83,18 @@ public class CajeroRestController {
                     .body("Error al rellenar cajeros: " + resultado.errorMessasge);
         }
     }
+
+    @GetMapping("/simularCambioDia/{id}")
+    public ResponseEntity<String> simularCambioDiaPorCajero(@PathVariable int id) {
+        Result resultado = cajeroDAOImplementation.RellenarInventarioPorCajero(id);
+
+        if (resultado.correct) {
+            return ResponseEntity.ok("Cajero rellenado correctamente.");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al rellenar cajero: " + resultado.errorMessasge);
+        }
+    }
+
 }
