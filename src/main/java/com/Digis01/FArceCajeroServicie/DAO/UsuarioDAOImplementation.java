@@ -20,7 +20,7 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
     public Result GetAllJPA() {
         Result result = new Result();
         try {
-            List<Usuario> usuarios = entityManager.createQuery("FROM Usuario", Usuario.class)
+            List<Usuario> usuarios = entityManager.createQuery("FROM Usuario ORDER BY idUsuario", Usuario.class)
                     .getResultList();
 
             result.objects = new ArrayList<Object>(usuarios);
@@ -56,8 +56,8 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
                 usuarioML.setStatus(usuarioJAP.getStatus());
 
                 Rol rolML = new Rol();
-                rolML.setIdRol(usuarioJAP.Rol.getIdRol());
-                usuarioML.Rol = rolML;
+                rolML.setIdRol(usuarioJAP.rol.getIdRol());
+                usuarioML.rol = rolML;
 
                 result.object = usuarioML;
                 result.correct = true;

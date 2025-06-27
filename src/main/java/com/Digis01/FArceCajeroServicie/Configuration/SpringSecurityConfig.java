@@ -27,7 +27,7 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors().and()
+                //                .cors().and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
@@ -36,22 +36,30 @@ public class SpringSecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/autenticateTheUser").permitAll()
                                 .requestMatchers("/cajero/**").hasAnyRole("ADMINISTRADOR", "PROGRAMADOR", "ANALISTA", "Administrador", "Usuario", "Comprador", "Visitnate")
                                 .requestMatchers(HttpMethod.POST, "/Usuario/GetAllDinamico").hasAnyRole("ADMINISTRADOR", "Comprador", "PROGRAMADOR", "Administrador", "ANALISTA", "Usuario")
-                                .requestMatchers("/Usuario/CargaMasiva").hasAnyRole("ADMINISTRADOR", "Comprador", "PROGRAMADOR", "Administrador")
                                 .requestMatchers(HttpMethod.GET, "/Usuario/**").hasAnyRole("ANALISTA", "Visitante", "PROGRAMADOR", "Administrador", "ADMINISTRADOR", "Comprador")
                                 .requestMatchers(HttpMethod.POST, "/Usuario/**").hasAnyRole("PROGRAMADOR", "Administrador")
                                 .requestMatchers("/cajeroapi/v1/**").permitAll()
+                                .requestMatchers("/usuarioapi/v1/**").permitAll()
                                 .requestMatchers("/auth/status").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
-                .loginPage("/Usuario/iniciarSesion")
+                .loginPage("/Usuario")
                 .loginProcessingUrl("/autenticateTheUser")
                 .permitAll()
                 .successHandler((request, response, authentication) -> {
                     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
                     response.setHeader("Pragma", "no-cache");
                     response.setDateHeader("Expires", 0);
-                    response.sendRedirect("http://localhost:8080/cajero/index");
+                    var roles = authentication.getAuthorities().toString();
+
+                    if (roles.contains("ROLE_Administrador")) {//"ROLE_Administrador,ROLE_PROGRAMADOR"
+                        response.sendRedirect("http://localhost:8080/cajero/index");
+                    } else if (roles.contains("ROLE_Comprador")) {
+                        response.sendRedirect("http://localhost:8080/cajero/index");
+                    } else {
+                        response.sendRedirect("/access-denied");
+                    }
                 })
                 )
                 .logout((logout) -> logout
@@ -64,7 +72,7 @@ public class SpringSecurityConfig {
                     response.setHeader("Pragma", "no-cache");
                     response.setDateHeader("Expires", 0);
 //                    response.sendRedirect("/login?logout");
-                    response.sendRedirect("http://localhost:8080/Usuario/iniciarSesion");
+                    response.sendRedirect("http://localhost:8080/Usuario");
                 })
                 )
                 .exceptionHandling((exceptions) -> exceptions

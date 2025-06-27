@@ -8,9 +8,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -122,6 +124,21 @@ public class CajeroDAOImplementation implements ICajeroDAO {
                 return result;
             }
 
+            // Obtener el usuario autenticado
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            BigDecimal saldoUsuario = entityManager.createQuery("""
+                SELECT u.saldo FROM Usuario u WHERE u.userName = :username
+            """, BigDecimal.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+
+            if (saldoUsuario == null || saldoUsuario.compareTo(BigDecimal.valueOf(monto)) < 0) {
+                result.correct = false;
+                result.errorMessasge = "Saldo insuficiente del usuario.";
+                return result;
+            }
+
             // Obtener el inventario del cajero, ordenado por denominación descendente
             List<com.Digis01.FArceCajeroServicie.JPA.CajeroInventario> inventario = entityManager.createQuery("""
                 SELECT new com.Digis01.FArceCajeroServicie.JPA.CajeroInventario(
@@ -198,6 +215,13 @@ public class CajeroDAOImplementation implements ICajeroDAO {
                 WHERE c.idcajero = :idCajero
             """)
                     .setParameter("idCajero", idCajero)
+                    .executeUpdate();
+
+            entityManager.createQuery("""
+                UPDATE Usuario u SET u.saldo = u.saldo - :monto WHERE u.userName = :username
+            """)
+                    .setParameter("monto", monto)
+                    .setParameter("username", username)
                     .executeUpdate();
 
             result.correct = true;

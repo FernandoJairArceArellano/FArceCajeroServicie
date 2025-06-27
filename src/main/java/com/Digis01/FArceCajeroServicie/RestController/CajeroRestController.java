@@ -37,7 +37,7 @@ public class CajeroRestController {
     @GetMapping("/todos")
     public ResponseEntity GetAll() {
         Result result = cajeroDAOImplementation.GetAllJPA();
-
+        
         if (result.correct) {
             if (result.objects.isEmpty()) {
                 return ResponseEntity.status(204).body(null);

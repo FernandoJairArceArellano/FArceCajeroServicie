@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -42,7 +43,10 @@ public class Usuario {
 
     @JoinColumn(name = "idrol")
     @ManyToOne
-    public Rol Rol;
+    public Rol rol;
+
+    @Column(name = "saldo")
+    private BigDecimal saldo;
 
     public int getIdUsuario() {
         return idUsuario;
@@ -133,10 +137,19 @@ public class Usuario {
     }
 
     public Rol getRol() {
-        return Rol;
+        return rol;
     }
 
     public void setRol(Rol Rol) {
-        this.Rol = Rol;
+        this.rol = Rol;
     }
+
+    public BigDecimal getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(BigDecimal saldo) {
+        this.saldo = saldo;
+    }
+
 }
