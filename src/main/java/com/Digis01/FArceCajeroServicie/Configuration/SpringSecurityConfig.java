@@ -55,7 +55,7 @@ public class SpringSecurityConfig {
 
                     if (roles.contains("ROLE_Administrador")) {//"ROLE_Administrador,ROLE_PROGRAMADOR"
                         response.sendRedirect("http://localhost:8080/cajero/index");
-                    } else if (roles.contains("ROLE_Comprador")) {
+                    } else if (roles.contains("ROLE_Usuario")) {
                         response.sendRedirect("http://localhost:8080/cajero/index");
                     } else {
                         response.sendRedirect("/access-denied");

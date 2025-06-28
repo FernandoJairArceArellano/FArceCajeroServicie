@@ -6,7 +6,9 @@ import com.Digis01.FArceCajeroServicie.JPA.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -20,10 +22,25 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
     public Result GetAllJPA() {
         Result result = new Result();
         try {
-            List<Usuario> usuarios = entityManager.createQuery("FROM Usuario ORDER BY idUsuario", Usuario.class)
+//            List<Usuario> usuarios = entityManager.createQuery("FROM Usuario ORDER BY idUsuario", Usuario.class)
+//                    .getResultList();
+            
+            List<Usuario> usuarios = entityManager.createQuery("FROM Usuario", Usuario.class)
                     .getResultList();
+            
+            // Ordenar datos del Query ordenandolos por fecha de nacimiento pero usando streams
 
-            result.objects = new ArrayList<Object>(usuarios);
+            // Orden ascendente (más viejos primero)
+            List<Usuario> usuariosOrdenadosAscendente = usuarios.stream()
+                    .sorted(Comparator.comparing(Usuario::getfNacimiento))
+                    .collect(Collectors.toList());
+
+            // Orden descendente (más jóvenes primero)
+            List<Usuario> usuariosOrdenadosDescendente = usuarios.stream()
+                    .sorted(Comparator.comparing(Usuario::getfNacimiento).reversed())
+                    .collect(Collectors.toList());
+
+            result.objects = new ArrayList<Object>(usuariosOrdenadosAscendente);
 
             result.correct = true;
         } catch (Exception ex) {
@@ -32,7 +49,6 @@ public class UsuarioDAOImplementation implements IUsuarioDAO {
             result.errorMessasge = ex.getLocalizedMessage();
             result.ex = ex;
         }
-
         return result;
     }
 
